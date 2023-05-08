@@ -1,0 +1,270 @@
+#include <stdio.h>
+
+int goods_management(){
+	
+	int goods_choice;
+	
+	while (1){
+		int choice;
+		printf("1. 상품 추가\n");
+        printf("2. 상품 수정\n");
+        printf("3. 상품 삭제\n");
+        printf("4. 상품 목록 출력\n");
+        printf("0. 종료\n");
+        printf("선택: ");
+        scanf("%d", &choice);
+        printf("\n");
+       
+		switch(choice){
+            case 1:
+                goods_add();
+                break;
+            case 2:
+                goods_change();
+                break;
+            case 3:
+                goods_delete();
+                break;
+            case 4:
+                goods_print();
+                break;
+            case 0:
+                printf("이전으로 돌아갑니다.\n");
+                return 0;
+		}
+       
+	}
+}
+
+typedef struct {
+    int id;           // 상품 ID
+    char name[100];   // 상품 이름
+    int price;        // 상품 가격
+    int quantity;     // 상품 수량
+} Goods;
+
+	Goods goods_list[100];   // 최대 100개의 상품 정보 저장 가능
+	int goods_count = 0;     // 현재 저장된 상품 수
+	
+void goods_add() {
+
+    // 상품 추가 구현
+    Goods new_goods;
+
+    printf("상품 ID를 입력하세요: ");
+    scanf("%d", &new_goods.id);
+    printf("상품 이름을 입력하세요: ");
+    scanf("%s", new_goods.name);
+    printf("상품 가격을 입력하세요: ");
+    scanf("%d", &new_goods.price);
+    printf("상품 수량을 입력하세요: ");
+    scanf("%d", &new_goods.quantity);
+
+    goods_list[goods_count++] = new_goods;
+    printf("상품이 추가되었습니다.\n");
+}
+
+void goods_change() {
+    int id, option, i;
+    printf("상품 ID를 입력하세요: ");
+    scanf("%d", &id);
+
+    for (i = 0; i < goods_count; i++) {
+        if (goods_list[i].id == id) {
+            printf("수정할 항목을 선택하세요 (1. 이름, 2. 가격, 3. 수량): ");
+            scanf("%d", &option);
+
+            switch (option) {
+                case 1:
+                    printf("새로운 상품 이름을 입력하세요: ");
+                    scanf("%s", goods_list[i].name);
+                    break;
+                case 2:
+                    printf("새로운 상품 가격을 입력하세요: ");
+                    scanf("%d", &goods_list[i].price);
+                    break;
+                case 3:
+                    printf("새로운 상품 수량을 입력하세요: ");
+                    scanf("%d", &goods_list[i].quantity);
+                    break;
+                default:
+                    printf("잘못된 입력입니다.\n");
+                    break;
+            }
+
+            printf("상품 정보가 수정되었습니다.\n");
+            return;
+        }
+    }
+
+    printf("해당 ID의 상품이 없습니다.\n");
+}
+
+void goods_delete() {
+    // 상품 삭제 구현
+    printf("상품 삭제 기능입니다.\n");
+}
+
+void goods_print() {
+	int i;
+    printf("현재 등록된 상품 목록:\n");
+    printf("=========================\n");
+    printf("상품 ID: %d\n", goods_list[i].id);
+    printf("상품 이름: %s\n", goods_list[i].name);
+    printf("상품 가격: %d원\n", goods_list[i].price);
+    printf("상품 수량: %d개\n", goods_list[i].quantity);
+    printf("=========================\n");
+}
+
+int customer_management(){
+	int customer_choice;
+	
+	while (1){
+		int choice;
+		printf("1. 고객 추가\n");
+        printf("2. 고객 수정\n");
+        printf("3. 고객 삭제\n");
+        printf("4. 고객 목록 출력\n");
+        printf("0. 종료\n");
+        printf("선택: ");
+        scanf("%d", &choice);
+        printf("\n");
+       
+		switch(choice){
+            case 1:
+                customer_add();
+                break;
+            case 2:
+                customer_change();
+                break;
+            case 3:
+                customer_delete();
+                break;
+            case 4:
+                customer_print();
+                break;
+            case 0:
+                printf("이전으로 돌아갑니다.\n");
+                return 0;
+		}
+       
+	}
+}
+
+int order_management(){
+		int order_choice;
+	
+	while (1){
+		int choice;
+		printf("1. 주문 추가\n");
+        printf("2. 주문 수정\n");
+        printf("3. 주문 삭제\n");
+        printf("4. 주문 목록 출력\n");
+        printf("5. 주문 상세 내역 출력\n");
+        printf("0. 종료\n");
+        printf("선택: ");
+        scanf("%d", &choice);
+        printf("\n");
+       
+		switch(choice){
+            case 1:
+                order_add();
+                break;
+            case 2:
+                order_change();
+                break;
+            case 3:
+                order_delete();
+                break;
+            case 4:
+                order_print();
+                break;
+            case 5:
+                order_detail_print();
+                break;
+            case 0:
+                printf("이전으로 돌아갑니다.\n");
+                return 0;
+		}
+       
+	}
+}
+
+
+
+void customer_add() {
+    // 고객 추가 구현
+    printf("고객 추가 기능입니다.\n");
+}
+
+void customer_change() {
+    // 고객 수정 구현
+    printf("고객 수정 기능입니다.\n");
+}
+
+void customer_delete() {
+    // 고객 삭제 구현
+    printf("고객 삭제 기능입니다.\n");
+}
+
+void customer_print() {
+    // 고객 목록 출력 구현
+    printf("고객 목록 출력 기능입니다.\n");
+}
+
+void order_add() {
+    // 주문 생성 구현
+    printf("주문 생성 기능입니다.\n");
+}
+
+void order_change() {
+    // 주문 수정 구현
+    printf("주문 수정 기능입니다.\n");
+}
+
+void order_delete() {
+    // 주문 삭제 구현
+    printf("주문 삭제 기능입니다.\n");
+}
+
+void order_print() {
+    // 주문 목록 출력 구현
+    printf("주문 목록 출력 기능입니다.\n");
+}
+
+void order_detail_print() {
+    // 주문 목록 출력 구현
+    printf("주문 목록 출력 기능입니다.\n");
+}
+
+int main() {
+    int choice;
+
+    while (1) {
+        printf("1. 상품 관리\n");
+        printf("2. 고객 관리\n");
+        printf("3. 주문 관리\n");
+        printf("0. 종료\n");
+        printf("선택: ");
+        scanf("%d", &choice);
+        printf("\n");
+
+        switch (choice) {
+            case 1:
+                goods_management();
+                break;
+            case 2:
+                customer_management();
+                break;
+            case 3:
+                order_management();
+                break;
+            case 0:
+                printf("프로그램을 종료합니다.\n");
+                return 0;
+            default:
+                printf("잘못된 선택입니다.\n");
+                break;
+        }
+    }
+}
