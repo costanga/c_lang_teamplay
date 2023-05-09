@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define MAX_GOODS_COUNT 100
 
 int goods_management(){
 	
@@ -47,8 +48,12 @@ typedef struct {
 	int goods_count = 0;     // 현재 저장된 상품 수
 	
 void goods_add() {
+    FILE* fp = fopen("goods.txt", "a");
+    if (fp == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");
+        return;
+    }
 
-    // 상품 추가 구현
     Goods new_goods;
 
     printf("상품 ID를 입력하세요: ");
@@ -60,7 +65,9 @@ void goods_add() {
     printf("상품 수량을 입력하세요: ");
     scanf("%d", &new_goods.quantity);
 
-    goods_list[goods_count++] = new_goods;
+    fprintf(fp, "%d %s %d %d\n", new_goods.id, new_goods.name, new_goods.price, new_goods.quantity);
+    fclose(fp);
+
     printf("상품이 추가되었습니다.\n");
 }
 
@@ -69,6 +76,21 @@ void goods_change() {
     printf("상품 ID를 입력하세요: ");
     scanf("%d", &id);
 
+    FILE* fp = fopen("goods.txt", "r");
+    if (fp == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");
+        return;
+    }
+
+    Goods goods_list[MAX_GOODS_COUNT];
+    int goods_count = 0;
+
+    while (fscanf(fp, "%d %s %d %d", &goods_list[goods_count].id, goods_list[goods_count].name, &goods_list[goods_count].price, &goods_list[goods_count].quantity) != EOF) {
+        goods_count++;
+    }
+
+    fclose(fp);
+
     for (i = 0; i < goods_count; i++) {
         if (goods_list[i].id == id) {
             printf("수정할 항목을 선택하세요 (1. 이름, 2. 가격, 3. 수량): ");
@@ -76,45 +98,114 @@ void goods_change() {
 
             switch (option) {
                 case 1:
-                    printf("새로운 상품 이름을 입력하세요: ");
+                    printf("수정할 이름을 입력하세요: ");
                     scanf("%s", goods_list[i].name);
                     break;
                 case 2:
-                    printf("새로운 상품 가격을 입력하세요: ");
+                    printf("수정할 가격을 입력하세요: ");
                     scanf("%d", &goods_list[i].price);
                     break;
                 case 3:
-                    printf("새로운 상품 수량을 입력하세요: ");
+                    printf("수정할 수량을 입력하세요: ");
                     scanf("%d", &goods_list[i].quantity);
                     break;
                 default:
                     printf("잘못된 입력입니다.\n");
-                    break;
+                    return;
             }
+
+            fp = fopen("goods.txt", "w");
+            if (fp == NULL) {
+                printf("상품 정보 파일을 열지 못했습니다.\n");
+                return;
+            }
+
+            for (i = 0; i < goods_count; i++) {
+                fprintf(fp, "%d %s %d %d\n", goods_list[i].id, goods_list[i].name, goods_list[i].price, goods_list[i].quantity);
+            }
+
+            fclose(fp);
 
             printf("상품 정보가 수정되었습니다.\n");
             return;
         }
     }
 
-    printf("해당 ID의 상품이 없습니다.\n");
+    printf("일치하는 상품 정보가 없습니다.\n");
 }
 
 void goods_delete() {
-    // 상품 삭제 구현
-    printf("상품 삭제 기능입니다.\n");
+    int id, i, j;
+    printf("상품 ID를 입력하세요: ");
+    scanf("%d", &id);
+
+    FILE* fp = fopen("goods.txt", "r");
+    if (fp == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");
+        return;
+    }
+
+    Goods goods_list[MAX_GOODS_COUNT];
+    int goods_count = 0;
+
+    while (fscanf(fp, "%d %s %d %d", &goods_list[goods_count].id, goods_list[goods_count].name, &goods_list[goods_count].price, &goods_list[goods_count].quantity) != EOF) {
+        goods_count++;
+    }
+
+    fclose(fp);
+
+    for (i = 0; i < goods_count; i++) {
+        if (goods_list[i].id == id) {
+            for (j = i; j < goods_count - 1; j++) {
+                goods_list[j] = goods_list[j + 1];
+            }
+            goods_count--;
+            break;
+        }
+    }
+
+    fp = fopen("goods.txt", "w");
+    if (fp == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");
+        return;
+    }
+
+    for (i = 0; i < goods_count; i++) {
+        fprintf(fp, "%d %s %d %d\n", goods_list[i].id, goods_list[i].name, goods_list[i].price, goods_list[i].quantity);
+    }
+
+    fclose(fp);
+
+    printf("상품이 삭제되었습니다.\n");
 }
 
+
 void goods_print() {
-	int i;
+    FILE* fp = fopen("goods.txt", "r");
+    if (fp == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");
+        return;
+    }
+
     printf("현재 등록된 상품 목록:\n");
-    printf("=========================\n");
-    printf("상품 ID: %d\n", goods_list[i].id);
-    printf("상품 이름: %s\n", goods_list[i].name);
-    printf("상품 가격: %d원\n", goods_list[i].price);
-    printf("상품 수량: %d개\n", goods_list[i].quantity);
-    printf("=========================\n");
+    printf("--------------------------------------------------\n");
+
+    Goods goods_list[MAX_GOODS_COUNT];
+    int goods_count = 0;
+
+    while (fscanf(fp, "%d %s %d %d", &goods_list[goods_count].id, goods_list[goods_count].name, &goods_list[goods_count].price, &goods_list[goods_count].quantity) != EOF) {
+        //printf("%d\t%s\t%d\t%d\n", goods_list[goods_count].id, goods_list[goods_count].name, goods_list[goods_count].price, goods_list[goods_count].quantity);
+        printf("상품 ID: %d\n", goods_list[goods_count].id);
+		printf("상품 이름: %s\n", goods_list[goods_count].name);
+		printf("상품 가격: %d\n", goods_list[goods_count].price);
+		printf("상품 수량: %d\n", goods_list[goods_count].quantity);
+    	printf("--------------------------------------------------\n");
+		goods_count++;
+    }
+
+    fclose(fp);
 }
+
 
 int customer_management(){
 	int customer_choice;
@@ -151,6 +242,34 @@ int customer_management(){
 	}
 }
 
+void customer_add() {
+    // 고객 추가 구현
+    printf("고객 추가 기능입니다.\n");
+}
+
+void customer_change() {
+    // 고객 수정 구현
+    printf("고객 수정 기능입니다.\n");
+}
+
+void customer_delete() {
+    // 고객 삭제 구현
+    printf("고객 삭제 기능입니다.\n");
+}
+
+void customer_print() {
+	int i; 
+    printf("현재 등록된 고객 목록:\n");
+    printf("=========================\n");
+    for (i = 0; i < goods_count; i++) {
+        printf("고객 ID: %d\n", goods_list[i].id);
+        printf("고객 이름: %s\n", goods_list[i].name);
+        printf("고객 가격: %d원\n", goods_list[i].price);
+        printf("고객 수량: %d개\n", goods_list[i].quantity);
+        printf("=========================\n");
+    }
+}
+
 int order_management(){
 		int order_choice;
 	
@@ -180,7 +299,7 @@ int order_management(){
                 order_print();
                 break;
             case 5:
-                order_detail_print();
+                order_print();
                 break;
             case 0:
                 printf("이전으로 돌아갑니다.\n");
@@ -192,25 +311,7 @@ int order_management(){
 
 
 
-void customer_add() {
-    // 고객 추가 구현
-    printf("고객 추가 기능입니다.\n");
-}
 
-void customer_change() {
-    // 고객 수정 구현
-    printf("고객 수정 기능입니다.\n");
-}
-
-void customer_delete() {
-    // 고객 삭제 구현
-    printf("고객 삭제 기능입니다.\n");
-}
-
-void customer_print() {
-    // 고객 목록 출력 구현
-    printf("고객 목록 출력 기능입니다.\n");
-}
 
 void order_add() {
     // 주문 생성 구현
@@ -228,11 +329,6 @@ void order_delete() {
 }
 
 void order_print() {
-    // 주문 목록 출력 구현
-    printf("주문 목록 출력 기능입니다.\n");
-}
-
-void order_detail_print() {
     // 주문 목록 출력 구현
     printf("주문 목록 출력 기능입니다.\n");
 }
