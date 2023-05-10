@@ -1,6 +1,8 @@
 #include <stdio.h>
 #define MAX_GOODS_COUNT 100
 #define MAX_CUSTOMER_COUNT 100
+#define MAX_ORDER_COUNT 100
+
 
 int goods_management(){
 	
@@ -444,13 +446,37 @@ int order_management(){
 	}
 }
 
+typedef struct {
+int id; // 주문 ID
+char name[100]; // 주문자 이름
+int quantity; // 상품 수량
+} Order;
 
+Order order_list[100]; // 최대 100개의 주문 정보 저장 가능
+int order_count = 0; // 현재 저장된 주문 수
 
 
 
 void order_add() {
-    // 주문 생성 구현
-    printf("주문 생성 기능입니다.\n");
+	FILE* fp = fopen("order.txt", "a");
+	if (fp == NULL) {
+		printf("주문 정보 파일을 열지 못했습니다.\n");
+		return;
+	
+}
+	Order new_order;
+
+	printf("주문 ID를 입력하세요: ");
+	scanf("%d", &new_order.id);
+	printf("주문자 이름을 입력하세요: ");
+	scanf("%s", new_order.name);
+	printf("상품 수량을 입력하세요: ");
+	scanf("%d", &new_order.quantity);
+	
+	fprintf(fp, "%d %s %d\n", new_order.id, new_order.name, new_order.quantity);
+	fclose(fp);
+	
+	printf("주문이 추가되었습니다.\n");
 }
 
 void order_change() {
@@ -464,9 +490,29 @@ void order_delete() {
 }
 
 void order_print() {
-    // 주문 목록 출력 구현
-    printf("주문 목록 출력 기능입니다.\n");
+    FILE* fp = fopen("order.txt", "r");
+    if (fp == NULL) {
+        printf("주문 정보 파일을 열지 못했습니다.\n");
+        return;
+    }
+
+    Order order_list[MAX_ORDER_COUNT];
+    int order_count = 0;
+	int i;
+	
+    while (fscanf(fp, "%d %s %d", &order_list[order_count].id, &order_list[order_count].name, &order_list[order_count].quantity) != EOF) {
+        order_count++;
+    }
+
+    fclose(fp);
+
+    printf("주문 ID\t상품 ID\t수량\n");
+    printf("------------------------------------\n");
+    for (i = 0; i < order_count; i++) {
+        printf("%d\t%s\t%d\n", order_list[i].id, order_list[i].name, order_list[i].quantity);
+    }
 }
+
 
 int main() {
     int choice;
