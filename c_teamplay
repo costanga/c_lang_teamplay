@@ -130,7 +130,6 @@ void goods_change() {
             printf("상품 정보가 수정되었습니다.\n");
             return;
         }
-    	printf("일치하는 상품 정보가 없습니다.\n");
 	}
 
 
@@ -338,12 +337,12 @@ void customer_change() {
 
 void customer_delete() {
     int id, i, j;
-    printf("상품 ID를 입력하세요: ");
+    printf("고객 ID를 입력하세요: ");
     scanf("%d", &id);
 
     FILE* fp = fopen("customer.txt", "r");
     if (fp == NULL) {
-        printf("상품 정보 파일을 열지 못했습니다.\n");
+        printf("고객 정보 파일을 열지 못했습니다.\n");
         return;
     }
 
@@ -357,7 +356,7 @@ void customer_delete() {
     fclose(fp);
 
     for (i = 0; i < customer_count; i++) {
-        if (goods_list[i].id == id) {
+        if (customer_list[i].id == id) {
             for (j = i; j < customer_count - 1; j++) {
                 customer_list[j] = customer_list[j + 1];
             }
@@ -368,7 +367,7 @@ void customer_delete() {
 
     fp = fopen("customer.txt", "w");
     if (fp == NULL) {
-        printf("상품 정보 파일을 열지 못했습니다.\n");
+        printf("고객 정보 파일을 열지 못했습니다.\n");
         return;
     }
 
@@ -378,7 +377,7 @@ void customer_delete() {
 
     fclose(fp);
 
-    printf("상품이 삭제되었습니다.\n");
+    printf("고객이 삭제되었습니다.\n");
 }
 
 void customer_print() {
