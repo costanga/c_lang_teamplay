@@ -1,43 +1,44 @@
+#define _CRT_SECURE_NO_WARNINGS //비쥬얼스튜디오 오류없애는거
 #include <stdio.h>
+#include <stdlib.h>
 #define MAX_GOODS_COUNT 100
 #define MAX_CUSTOMER_COUNT 100
 #define MAX_ORDER_COUNT 100
 
 
-int goods_management(){
-	
-	int goods_choice;
-	
-	while (1){
-		int choice;
-		printf("1. 상품 추가\n");
+
+int goods_management() {
+
+    while (1) {
+        int choice;
+        printf("1. 상품 추가\n");
         printf("2. 상품 수정\n");
         printf("3. 상품 삭제\n");
         printf("4. 상품 목록 출력\n");
-        printf("0. 종료\n");
+        printf("0. 이전으로\n");
         printf("선택: ");
         scanf("%d", &choice);
         printf("\n");
-       
-		switch(choice){
-            case 1:
-                goods_add();
-                break;
-            case 2:
-                goods_change();
-                break;
-            case 3:
-                goods_delete();
-                break;
-            case 4:
-                goods_print();
-                break;
-            case 0:
-                printf("이전으로 돌아갑니다.\n");
-                return 0;
-		}
-       
-	}
+
+        switch (choice) {
+        case 1:
+            goods_add();
+            break;
+        case 2:
+            goods_change();
+            break;
+        case 3:
+            goods_delete();
+            break;
+        case 4:
+            goods_print();
+            break;
+        case 0:
+            printf("이전으로 돌아갑니다.\n");
+            return 0;
+        }
+
+    }
 }
 
 typedef struct {
@@ -47,10 +48,10 @@ typedef struct {
     int quantity;     // 상품 수량
 } Goods;
 
-	Goods goods_list[100];   // 최대 100개의 상품 정보 저장 가능
-	int goods_count = 0;     // 현재 저장된 상품 수
-	
-void goods_add() {
+Goods goods_list[100];   // 최대 100개의 상품 정보 저장 가능
+int goods_count = 0;     // 현재 저장된 상품 수
+
+int goods_add() {
     FILE* fp = fopen("goods.txt", "a");
     if (fp == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
@@ -74,7 +75,7 @@ void goods_add() {
     printf("상품이 추가되었습니다.\n");
 }
 
-void goods_change() {
+int goods_change() {
     int id, option, i;
     printf("상품 ID를 입력하세요: ");
     scanf("%d", &id);
@@ -100,21 +101,21 @@ void goods_change() {
             scanf("%d", &option);
 
             switch (option) {
-                case 1:
-                    printf("수정할 이름을 입력하세요: ");
-                    scanf("%s", goods_list[i].name);
-                    break;
-                case 2:
-                    printf("수정할 가격을 입력하세요: ");
-                    scanf("%d", &goods_list[i].price);
-                    break;
-                case 3:
-                    printf("수정할 수량을 입력하세요: ");
-                    scanf("%d", &goods_list[i].quantity);
-                    break;
-                default:
-                    printf("잘못된 입력입니다.\n");
-                    return;
+            case 1:
+                printf("수정할 이름을 입력하세요: ");
+                scanf("%s", goods_list[i].name);
+                break;
+            case 2:
+                printf("수정할 가격을 입력하세요: ");
+                scanf("%d", &goods_list[i].price);
+                break;
+            case 3:
+                printf("수정할 수량을 입력하세요: ");
+                scanf("%d", &goods_list[i].quantity);
+                break;
+            default:
+                printf("잘못된 입력입니다.\n");
+                return;
             }
 
             fp = fopen("goods.txt", "w");
@@ -132,13 +133,13 @@ void goods_change() {
             printf("상품 정보가 수정되었습니다.\n");
             return;
         }
-	}
+    }
 
 
     printf("해당 ID의 상품이 없습니다.\n");
 }
 
-void goods_delete() {
+int goods_delete() {
     int id, i, j;
     printf("상품 ID를 입력하세요: ");
     scanf("%d", &id);
@@ -183,8 +184,7 @@ void goods_delete() {
     printf("상품이 삭제되었습니다.\n");
 }
 
-
-void goods_print() {
+int goods_print() {
     FILE* fp = fopen("goods.txt", "r");
     if (fp == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
@@ -200,85 +200,85 @@ void goods_print() {
     while (fscanf(fp, "%d %s %d %d", &goods_list[goods_count].id, goods_list[goods_count].name, &goods_list[goods_count].price, &goods_list[goods_count].quantity) != EOF) {
         //printf("%d\t%s\t%d\t%d\n", goods_list[goods_count].id, goods_list[goods_count].name, goods_list[goods_count].price, goods_list[goods_count].quantity);
         printf("상품 ID: %d\n", goods_list[goods_count].id);
-		printf("상품 이름: %s\n", goods_list[goods_count].name);
-		printf("상품 가격: %d\n", goods_list[goods_count].price);
-		printf("상품 수량: %d\n", goods_list[goods_count].quantity);
-    	printf("--------------------------------------------------\n");
-		goods_count++;
+        printf("상품 이름: %s\n", goods_list[goods_count].name);
+        printf("상품 가격: %d\n", goods_list[goods_count].price);
+        printf("상품 수량: %d\n", goods_list[goods_count].quantity);
+        printf("--------------------------------------------------\n");
+        goods_count++;
     }
 
     fclose(fp);
 }
 
 
-int customer_management(){
-	int customer_choice;
-	
-	while (1){
-		int choice;
-		printf("1. 고객 추가\n");
+int customer_management() {
+    int customer_choice;
+
+    while (1) {
+        int choice;
+        printf("1. 고객 추가\n");
         printf("2. 고객 수정\n");
         printf("3. 고객 삭제\n");
         printf("4. 고객 목록 출력\n");
-        printf("0. 종료\n");
+        printf("0. 이전으로\n");
         printf("선택: ");
         scanf("%d", &choice);
         printf("\n");
-       
-		switch(choice){
-            case 1:
-                customer_add();
-                break;
-            case 2:
-                customer_change();
-                break;
-            case 3:
-                customer_delete();
-                break;
-            case 4:
-                customer_print();
-                break;
-            case 0:
-                printf("이전으로 돌아갑니다.\n");
-                return 0;
-		}
-       
-	}
+
+        switch (choice) {
+        case 1:
+            customer_add();
+            break;
+        case 2:
+            customer_change();
+            break;
+        case 3:
+            customer_delete();
+            break;
+        case 4:
+            customer_print();
+            break;
+        case 0:
+            printf("이전으로 돌아갑니다.\n");
+            return 0;
+        }
+
+    }
 }
 
 
 typedef struct {
-	int id; // 고객 ID
-	char name[100]; // 고객 이름
-	int age;// 고객 전화번호 
+    int id; // 고객 ID
+    char name[100]; // 고객 이름
+    int age;// 고객 전화번호 
 } Customer;
 
-	Customer customer_list[100]; // 최대 100명의 고객 정보 저장 가능
-	int customer_count = 0; // 현재 저장된 고객 수
+Customer customer_list[100];
+int customer_count = 0; 
 
-void customer_add() {
-	FILE* fp = fopen("customer.txt", "a");
-	if (fp == NULL) {
-		printf("고객 정보 파일을 열지 못했습니다.\n");
-		return;
+int customer_add() {
+    FILE* fp = fopen("customer.txt", "a");
+    if (fp == NULL) {
+        printf("고객 정보 파일을 열지 못했습니다.\n");
+        return;
+    }
+
+    Customer new_customer;
+
+    printf("고객 ID를 입력하세요: ");
+    scanf("%d", &new_customer.id);
+    printf("고객 이름을 입력하세요: ");
+    scanf("%s", new_customer.name);
+    printf("고객 나이를 입력하세요: ");
+    scanf("%d", &new_customer.age);
+
+    fprintf(fp, "%d %s %d\n", new_customer.id, new_customer.name, new_customer.age);
+    fclose(fp);
+
+    printf("고객이 추가되었습니다.\n");
 }
 
-	Customer new_customer;
-	
-	printf("고객 ID를 입력하세요: ");
-	scanf("%d", &new_customer.id);
-	printf("고객 이름을 입력하세요: ");
-	scanf("%s", new_customer.name);
-	printf("고객 나이를 입력하세요: ");
-	scanf("%d", &new_customer.age);
-	
-	fprintf(fp, "%d %s %d\n", new_customer.id, new_customer.name, new_customer.age);
-	fclose(fp);
-	
-	printf("고객이 추가되었습니다.\n");
-}
-
-void customer_change() {
+int customer_change() {
     int id, option, i;
     printf("고객 ID를 입력하세요: ");
     scanf("%d", &id);
@@ -301,20 +301,20 @@ void customer_change() {
     for (i = 0; i < customer_count; i++) {
         if (customer_list[i].id == id) {
             printf("수정할 항목을 선택하세요 (1. 이름, 2. 나이): ");
-            scanf("%d", &option); 
+            scanf("%d", &option);
 
             switch (option) {
-                case 1:
-                    printf("수정할 이름을 입력하세요: ");
-                    scanf("%s", customer_list[i].name);
-                    break;
-                case 2:
-                    printf("수정할 나이를 입력하세요: ");
-                    scanf("%s", &customer_list[i].age);
-                    break;
-                default:
-                    printf("잘못된 입력입니다.\n");
-                    return;
+            case 1:
+                printf("수정할 이름을 입력하세요: ");
+                scanf("%s", customer_list[i].name);
+                break;
+            case 2:
+                printf("수정할 나이를 입력하세요: ");
+                scanf("%s", &customer_list[i].age);
+                break;
+            default:
+                printf("잘못된 입력입니다.\n");
+                return;
             }
 
             fp = fopen("customer.txt", "w");
@@ -337,7 +337,7 @@ void customer_change() {
     printf("일치하는 고객 정보가 없습니다.\n");
 }
 
-void customer_delete() {
+int customer_delete() {
     int id, i, j;
     printf("고객 ID를 입력하세요: ");
     scanf("%d", &id);
@@ -382,7 +382,7 @@ void customer_delete() {
     printf("고객이 삭제되었습니다.\n");
 }
 
-void customer_print() {
+int customer_print() {
     FILE* fp = fopen("customer.txt", "r");
     if (fp == NULL) {
         printf("고객 정보 파일을 열지 못했습니다.\n");
@@ -398,58 +398,59 @@ void customer_print() {
     while (fscanf(fp, "%d %s %d", &customer_list[customer_count].id, customer_list[customer_count].name, &customer_list[customer_count].age) != EOF) {
         //printf("%d\t%s\t%d\t%d\n", goods_list[goods_count].id, goods_list[goods_count].name, goods_list[goods_count].price, goods_list[goods_count].quantity);
         printf("고객 ID: %d\n", customer_list[customer_count].id);
-		printf("고객 이름: %s\n", customer_list[customer_count].name);
-		printf("고객 전화번호: %d\n", customer_list[customer_count].age);
-    	printf("--------------------------------------------------\n");
-		customer_count++;
+        printf("고객 이름: %s\n", customer_list[customer_count].name);
+        printf("고객 전화번호: %d\n", customer_list[customer_count].age);
+        printf("--------------------------------------------------\n");
+        customer_count++;
     }
 
     fclose(fp);
 }
 
-int order_management(){
-		int order_choice;
-	
-	while (1){
-		int choice;
-		printf("1. 주문 추가\n");
+int order_management() {
+
+    while (1) {
+        int choice;
+        printf("1. 주문 추가\n");
         printf("2. 주문 수정\n");
         printf("3. 주문 삭제\n");
         printf("4. 주문 목록 출력\n");
         printf("5. 주문 상세 내역 출력\n");
-        printf("0. 종료\n");
+        printf("0. 이전으로\n");
         printf("선택: ");
         scanf("%d", &choice);
         printf("\n");
-       
-		switch(choice){
-            case 1:
-                order_add();
-                break;
-            case 2:
-                order_change();
-                break;
-            case 3:
-                order_delete();
-                break;
-            case 4:
-                order_print();
-                break;
-            case 5:
-                order_print();
-                break;
-            case 0:
-                printf("이전으로 돌아갑니다.\n");
-                return 0;
-		}
-       
-	}
+
+        switch (choice) {
+        case 1:
+            order_add();
+            break;
+        case 2:
+            order_change();
+            break;
+        case 3:
+            order_delete();
+            break;
+        case 4:
+            order_print();
+            break;
+        case 5:
+            order_detail();
+            break;
+        case 0:
+            printf("이전으로 돌아갑니다.\n");
+            return 0;
+        }
+
+    }
 }
 
 typedef struct {
-int id; // 주문 ID
-char name[100]; // 주문자 이름
-int quantity; // 상품 수량
+    int id; // 주문 ID
+    char name[100]; // 주문자 이름
+    int quantity; // 주문 수량
+    int price; //주문 가격
+    char date[100]; // 주문 날짜
 } Order;
 
 Order order_list[100]; // 최대 100개의 주문 정보 저장 가능
@@ -457,60 +458,203 @@ int order_count = 0; // 현재 저장된 주문 수
 
 
 
-void order_add() {
-	FILE* fp = fopen("order.txt", "a");
-	if (fp == NULL) {
-		printf("주문 정보 파일을 열지 못했습니다.\n");
-		return;
-	
-}
-	Order new_order;
-
-	printf("주문 ID를 입력하세요: ");
-	scanf("%d", &new_order.id);
-	printf("주문자 이름을 입력하세요: ");
-	scanf("%s", new_order.name);
-	printf("상품 수량을 입력하세요: ");
-	scanf("%d", &new_order.quantity);
-	
-	fprintf(fp, "%d %s %d\n", new_order.id, new_order.name, new_order.quantity);
-	fclose(fp);
-	
-	printf("주문이 추가되었습니다.\n");
-}
-
-void order_change() {
-    // 주문 수정 구현
-    printf("주문 수정 기능입니다.\n");
-}
-
-void order_delete() {
-    // 주문 삭제 구현
-    printf("주문 삭제 기능입니다.\n");
-}
-
-void order_print() {
-    FILE* fp = fopen("order.txt", "r");
+ int order_add() {
+    FILE* fp = fopen("order.txt", "a");
     if (fp == NULL) {
         printf("주문 정보 파일을 열지 못했습니다.\n");
         return;
+
+    }
+    Order new_order;
+
+    printf("주문 ID를 입력하세요: ");
+    scanf("%d", &new_order.id);
+    printf("주문자 이름을 입력하세요: ");
+    scanf("%s", new_order.name);
+    printf("주문 수량을 입력하세요: ");
+    scanf("%d", &new_order.quantity);
+    printf("주문 가격을 입력하세요: ");
+    scanf("%d", &new_order.price);
+    printf("주문 날짜를 입력하세요: ");
+    scanf("%s", new_order.date);
+
+
+    fprintf(fp, "%d %s %d %d %s\n", new_order.id, new_order.name, new_order.quantity, new_order.price, new_order.date);
+    fclose(fp);
+
+    printf("주문이 추가되었습니다.\n");
+    return;
+}
+
+int order_change() {
+    int id, option, i;
+    printf("주문 ID를 입력하세요: ");
+    scanf("%d", &id);
+
+    FILE* fp = fopen("order.txt", "r");
+    if (fp == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");
+        return;
     }
 
-    Order order_list[MAX_ORDER_COUNT];
+    Order order_list[MAX_GOODS_COUNT];
     int order_count = 0;
-	int i;
-	
-    while (fscanf(fp, "%d %s %d", &order_list[order_count].id, &order_list[order_count].name, &order_list[order_count].quantity) != EOF) {
+
+    while (fscanf(fp, "%d %s %d %d %s", &order_list[order_count].id, order_list[order_count].name, &order_list[order_count].quantity, &order_list[order_count].price, &order_list[order_count].date) != EOF) {
         order_count++;
     }
 
     fclose(fp);
 
-    printf("주문 ID\t상품 ID\t수량\n");
+    for (i = 0; i < order_count; i++) {
+        if (order_list[i].id == id) {
+            printf("수정할 항목을 선택하세요 (1. 이름, 2. 수량, 3. 가격, 4, 날짜): ");
+            scanf("%d", &option);
+
+            switch (option) {
+            case 1:
+                printf("수정할 이름을 입력하세요: ");
+                scanf("%s", order_list[i].name);
+                break;
+            case 2:
+                printf("수정할 수량을 입력하세요: ");
+                scanf("%d", &order_list[i].quantity);
+                break;
+            case 3:
+                printf("수정할 가격을 입력하세요: ");
+                scanf("%d", &order_list[i].price);
+                break;
+            case 4:
+                printf("수정할 날짜를 입력하세요: ");
+                scanf("%s", order_list[i].date);
+                break;
+            default:
+                printf("잘못된 입력입니다.\n");
+                return;
+            }
+
+            fp = fopen("order.txt", "w");
+            if (fp == NULL) {
+                printf("상품 정보 파일을 열지 못했습니다.\n");
+                return;
+            }
+
+            for (i = 0; i < order_count; i++) {
+                fprintf(fp, "%d %s %d %d %s\n", order_list[i].id, order_list[i].name, order_list[i].quantity, &order_list[order_count].price, order_list[order_count].date);
+            }
+
+            fclose(fp);
+
+            printf("상품 정보가 수정되었습니다.\n\n");
+            return;
+        }
+    }
+
+
+    printf("해당 ID의 상품이 없습니다.\n");
+}
+
+int order_delete() {
+    int id, i, j;
+    printf("상품 ID를 입력하세요: ");
+    scanf("%d", &id);
+
+    FILE* fp = fopen("order.txt", "r");
+    if (fp == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");
+        return;
+    }
+
+    Order order_list[MAX_GOODS_COUNT];
+    int order_count = 0;
+
+    while (fscanf(fp, "%d %s %d %d %s", &order_list[order_count].id, order_list[order_count].name, &order_list[order_count].quantity, & order_list[order_count].price, order_list[order_count].date) != EOF) {
+        order_count++;
+    }
+
+    fclose(fp);
+
+    for (i = 0; i < order_count; i++) {
+        if (order_list[i].id == id) {
+            for (j = i; j < order_count - 1; j++) {
+                order_list[j] = order_list[j + 1];
+            }
+            order_count--;
+            break;
+        }
+    }
+
+    fp = fopen("order.txt", "w");
+    if (fp == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");
+        return;
+    }
+
+    for (i = 0; i < order_count; i++) {
+        fprintf(fp, "%d %s %d %d %s\n", order_list[i].id, order_list[i].name, order_list[i].quantity, order_list[i].price, order_list[i].date);
+    }
+
+    fclose(fp);
+
+    printf("상품이 삭제되었습니다.\n\n");
+}
+
+int order_print() {
+    FILE* fp = fopen("order.txt", "r");
+    if (fp == NULL) {
+        printf("주문 정보 파일을 열지 못했습니다.\n");
+        return -1;
+    }
+
+    Order order_list[MAX_ORDER_COUNT];
+    int order_count = 0;
+    int i;
+
+    while (fscanf(fp, "%d %s %d", &order_list[order_count].id, order_list[order_count].name, &order_list[order_count].quantity) == 3) {
+        order_count++;
+    }
+
+    fclose(fp);
+
+    printf("주문 ID\t이름\t수량\n");
     printf("------------------------------------\n");
     for (i = 0; i < order_count; i++) {
         printf("%d\t%s\t%d\n", order_list[i].id, order_list[i].name, order_list[i].quantity);
     }
+
+    return 0;
+}
+
+int order_detail() {
+    FILE* fp = fopen("order.txt", "r");
+    if (fp == NULL) {
+        printf("주문 정보 파일을 열지 못했습니다.\n");
+        return -1;
+    }
+
+    Order order_list[MAX_ORDER_COUNT];
+    int order_count = 0;
+    int i;
+
+    while (fscanf(fp, "%d %s %d %d %s", &order_list[order_count].id, order_list[order_count].name, &order_list[order_count].quantity, &order_list[order_count].price, order_list[order_count].date) == 5) {
+        order_count++;
+    }
+
+    fclose(fp);
+
+    printf("주문 ID\t이름\t수량\n");
+    printf("------------------------------------\n");
+    for (i = 0; i < order_count; i++) {
+        printf("%d\t%s\t%d\n", order_list[i].id, order_list[i].name, order_list[i].quantity);
+    }
+    printf("------------------------------------\n");
+    printf("주문 가격\t주문 날짜\n");
+    printf("------------------------------------\n");
+    for (i = 0; i < order_count; i++) {
+        printf("%d\t\t%s\n", order_list[i].price, order_list[i].date);
+    }
+
+    return 0;
 }
 
 
@@ -527,21 +671,21 @@ int main() {
         printf("\n");
 
         switch (choice) {
-            case 1:
-                goods_management();
-                break;
-            case 2:
-                customer_management();
-                break;
-            case 3:
-                order_management();
-                break;
-            case 0:
-                printf("프로그램을 종료합니다.\n");
-                return 0;
-            default:
-                printf("잘못된 선택입니다.\n");
-                break;
+        case 1:
+            goods_management();
+            break;
+        case 2:
+            customer_management();
+            break;
+        case 3:
+            order_management();
+            break;
+        case 0:
+            printf("프로그램을 종료합니다.\n");
+            return 0;
+        default:
+            printf("잘못된 선택입니다.\n");
+            break;
         }
     }
 }
