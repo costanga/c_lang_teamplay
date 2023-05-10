@@ -1,9 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS //비쥬얼스튜디오 오류없애는거
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX_GOODS_COUNT 100
-#define MAX_CUSTOMER_COUNT 100
-#define MAX_ORDER_COUNT 100
+#define MAX_GOODS_COUNT 256
+#define MAX_CUSTOMER_COUNT 256
+#define MAX_ORDER_COUNT 256
 
 
 
@@ -460,6 +460,13 @@ int order_count = 0; // 현재 저장된 주문 수
 // 파일 이름은 일반 정보는 order 세부정보는 order_detail로 함
 
  int order_add() {
+    FILE* fp = fopen("order.txt", "a");
+    if (fp == NULL) {
+        printf("주문 정보 파일을 열지 못했습니다.\n");
+        return;
+
+    }
+    Order new_order;
 
     printf("주문 ID를 입력하세요: ");
     scanf("%d", &new_order.id);
@@ -471,16 +478,6 @@ int order_count = 0; // 현재 저장된 주문 수
     scanf("%d", &new_order.price);
     printf("주문 날짜를 입력하세요: ");
     scanf("%s", new_order.date);
-
-     FILE* fp = fopen("order.txt", "a");
-    if (fp == NULL) {
-        printf("주문 정보 파일을 열지 못했습니다.\n");
-        return;
-
-    }
-    Order new_order;
-
-    
 
 
     fprintf(fp, "%d %s %d\n", new_order.id, new_order.name, new_order.quantity);
@@ -633,26 +630,14 @@ int order_delete() {
 
     Order order_list[MAX_GOODS_COUNT];
     int order_count = 0;
-    int order_count_detail = 0;
+    int order_detail_count = 0;
 
     while (fscanf(fp, "%d %s %d", &order_list[order_count].id, order_list[order_count].name, &order_list[order_count].quantity) != EOF) {
         order_count++;
     }
 
     fclose(fp);
-
-    FILE* fp1 = fopen("order_detail.txt", "r");
-    if (fp1 == NULL) {
-        printf("상품 정보 파일을 열지 못했습니다.\n");
-        return;
-    }
-
-    while (fscanf(fp1, "%d %d %s", &order_list[order_count].id, &order_list[order_count].price, order_list[order_count].date) != EOF) {
-        order_count_detail++;
-    }
-
-    fclose(fp1);
-
+ 
     for (i = 0; i < order_count; i++) {
         if (order_list[i].id == id) {
             for (j = i; j < order_count - 1; j++) {
@@ -662,17 +647,6 @@ int order_delete() {
             break;
         }
     }
-
-    for (a = 0; a < order_count_detail; a++) {
-        if (order_list[a].id == id) {
-            for (b = a; b < order_count_detail - 1; b++) {
-                order_list[b] = order_list[b + 1];
-            }
-            order_count_detail--;
-            break;
-        }
-    }
-
 
     fp = fopen("order.txt", "w");
     if (fp == NULL) {
@@ -686,23 +660,47 @@ int order_delete() {
 
     fclose(fp);
 
-    fp1 = fopen("order_detail.txt", "w");
-    if (fp1 == NULL) {
+    FILE* fpa = fopen("order_detail.txt", "r");
+    if (fpa == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
         return;
     }
 
-    for (a = 0; a < order_count_detail; a++) {
-        fprintf(fp1, "%d %d %s\n", order_list[a].id, order_list[a].price, order_list[a].date);
+    while (fscanf(fpa, "%d %d %s", &order_list[order_detail_count].id, &order_list[order_detail_count].price, order_list[order_detail_count].date) != EOF) {
+        order_detail_count++;
     }
 
-    fclose(fp1);
+    fclose(fpa);
+
+
+
+    for (a = 0; a < order_detail_count; a++) {
+        if (order_list[a].id == id) {
+            for (b = a; b < order_detail_count - 1; b++) {
+                order_list[b] = order_list[b + 1];
+            }
+            order_detail_count--;
+            break;
+        }
+    }
+
+    fpa = fopen("order_detail.txt", "w");
+    if (fpa == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");
+        return;
+    }
+
+    for (a = 0; a < order_detail_count; a++) {
+        fprintf(fpa, "%d %d %s\n", order_list[a].id, order_list[a].price, order_list[a].date);
+    }
+
+    fclose(fpa);
 
     printf("상품이 삭제되었습니다.\n\n");
 }
 
 int order_print() {
-    FILE* fp = fopen("order_detail.txt", "r");
+    FILE* fp = fopen("order.txt", "r");
     if (fp == NULL) {
         printf("주문 정보 파일을 열지 못했습니다.\n");
         return -1;
@@ -721,7 +719,7 @@ int order_print() {
     printf("주문 ID\t이름\t수량\n");
     printf("------------------------------------\n");
     for (i = 0; i < order_count; i++) {
-        printf("%d\t%s\t%d\n\n", order_list[i].id, order_list[i].name, order_list[i].quantity);
+        printf("%d\t%s\t%d\n", order_list[i].id, order_list[i].name, order_list[i].quantity);
     }
 
     return 0;
@@ -738,21 +736,21 @@ int order_detail() {
     int order_count = 0;
     int i;
 
-    while (fscanf(fp, "%d %d %s", &order_list[order_count].id, order_list[order_count].price, &order_list[order_count].date) == 3) {
+    while (fscanf(fp, "%d %d %s", &order_list[order_count].id, &order_list[order_count].price, order_list[order_count].date) == 3) {
         order_count++;
     }
 
     fclose(fp);
 
-    printf("주문 ID\t가격\t날짜\n");
+    printf("------------------------------------\n");
+    printf("주문 가격\t주문 날짜\n");
     printf("------------------------------------\n");
     for (i = 0; i < order_count; i++) {
-        printf("%d\t%s\t%d\n\n", order_list[i].id, order_list[i].price, order_list[i].date);
+        printf("%d\t\t%s\n", order_list[i].price, order_list[i].date);
     }
 
     return 0;
 }
-
 
 
 int main() {
