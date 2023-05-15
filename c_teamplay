@@ -1,9 +1,45 @@
 #define _CRT_SECURE_NO_WARNINGS //비쥬얼스튜디오 오류없애는거
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX_GOODS_COUNT 256
-#define MAX_CUSTOMER_COUNT 256
-#define MAX_ORDER_COUNT 256
+#define MAX_GOODS_COUNT 256 //최대 상품 개수 256 
+#define MAX_CUSTOMER_COUNT 256 //최대 고객 개수 256 
+#define MAX_ORDER_COUNT 256 //최대 주문 개수 256 
+
+
+
+int goods_management() { // 상품 관리 함수
+
+    while (1) {
+        int choice;
+        printf("1. 상품 추가\n");
+        printf("2. 상품 수정\n");
+        printf("3. 상품 삭제\n");
+        printf("4. 상품 목록 출력\n");
+        printf("0. 이전으로\n");
+        printf("선택: ");
+        scanf("%d", &choice);
+        printf("\n");
+
+        switch (choice) { // 사용자가 선택한 메뉴에 따라 해당 함수를 호출
+        case 1:
+            goods_add();  // 상품 추가 함수 호출
+            break;
+        case 2:
+            goods_change(); // 상품 수정 함수 호출
+            break;
+        case 3:
+            goods_delete(); // 상품 삭제 함수 호출
+            break;
+        case 4:
+            goods_print(); // 상품 목록 출력 함수 호출
+            break;
+        case 0:
+            printf("이전으로 돌아갑니다.\n");
+            return 0;
+        }
+
+    }
+}
 
 typedef struct {
     int id;           // 상품 ID
@@ -15,14 +51,14 @@ typedef struct {
 Goods goods_list[100];   // 최대 100개의 상품 정보 저장 가능
 int goods_count = 0;     // 현재 저장된 상품 수
 
-int goods_add() {
-    FILE* fp = fopen("goods.txt", "a");
-    if (fp == NULL) {
+int goods_add() {   // 상품 추가 함수
+    FILE* fp = fopen("goods.txt", "a");   // 상품 정보를 저장할 파일을 추가 모드로 열기 
+    if (fp == NULL) {   // 파일 열기에 실패한 경우 오류 메시지를 출력하고 함수를 종료
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
-    Goods new_goods;
+    Goods new_goods; // 새로운 상품 정보를 입력받음 
 
     printf("상품 ID를 입력하세요: ");
     scanf("%d", &new_goods.id);
@@ -33,25 +69,24 @@ int goods_add() {
     printf("상품 수량을 입력하세요: ");
     scanf("%d", &new_goods.quantity);
 
-    fprintf(fp, "%d %s %d %d\n", new_goods.id, new_goods.name, new_goods.price, new_goods.quantity);
-    fclose(fp);
+    fprintf(fp, "%d %s %d %d\n", new_goods.id, new_goods.name, new_goods.price, new_goods.quantity);   // 입력받은 상품 정보를 파일에 저장
+    fclose(fp); // 파일을 닫음 
 
     printf("상품이 추가되었습니다.\n");
 }
 
-int goods_change() {
+int goods_change() { // 상품 정보를 수정하는 함수
     int id, option, i;
-
     printf("상품 ID를 입력하세요: ");
     scanf("%d", &id);
 
     FILE* fp = fopen("goods.txt", "r");
     if (fp == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
-    Goods goods_list[MAX_GOODS_COUNT];
+    Goods goods_list[MAX_GOODS_COUNT];   // 파일에서 상품 정보를 읽어와서 goods_list에 저장
     int goods_count = 0;
 
     while (fscanf(fp, "%d %s %d %d", &goods_list[goods_count].id, goods_list[goods_count].name, &goods_list[goods_count].price, &goods_list[goods_count].quantity) != EOF) {
@@ -60,7 +95,7 @@ int goods_change() {
 
     fclose(fp);
 
-    for (i = 0; i < goods_count; i++) {
+    for (i = 0; i < goods_count; i++) {   // 입력한 id와 일치하는 상품 정보를 찾아 수정
         if (goods_list[i].id == id) {
             printf("수정할 항목을 선택하세요 (1. 이름, 2. 가격, 3. 수량): ");
             scanf("%d", &option);
@@ -80,13 +115,13 @@ int goods_change() {
                 break;
             default:
                 printf("잘못된 입력입니다.\n");
-                return 0;
+                return;
             }
 
-            fp = fopen("goods.txt", "w");
+            fp = fopen("goods.txt", "w");   // 수정된 상품 정보를 파일에 저장
             if (fp == NULL) {
                 printf("상품 정보 파일을 열지 못했습니다.\n");
-                return 0;
+                return;
             }
 
             for (i = 0; i < goods_count; i++) {
@@ -96,36 +131,35 @@ int goods_change() {
             fclose(fp);
 
             printf("상품 정보가 수정되었습니다.\n");
-            return 0;
+            return;
         }
     }
 
 
-    printf("해당 ID의 상품이 없습니다.\n");
+    printf("해당 ID의 상품이 없습니다.\n");  // 해당 id의 상품이 없을 경우
 }
 
-int goods_delete() {
+int goods_delete() { // 상품 삭제 함수
     int id, i, j;
-
-    printf("상품 ID를 입력하세요: ");
+    printf("상품 ID를 입력하세요: ");   // 삭제할 상품 ID 입력 받기
     scanf("%d", &id);
 
-    FILE* fp = fopen("goods.txt", "r");
+    FILE* fp = fopen("goods.txt", "r");   // 상품 정보 파일 열기
     if (fp == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
-    Goods goods_list[MAX_GOODS_COUNT];
+    Goods goods_list[MAX_GOODS_COUNT];    // 상품 정보를 저장할 배열과 상품 수 초기화
     int goods_count = 0;
 
     while (fscanf(fp, "%d %s %d %d", &goods_list[goods_count].id, goods_list[goods_count].name, &goods_list[goods_count].price, &goods_list[goods_count].quantity) != EOF) {
         goods_count++;
-    }
+    }     // 파일에서 상품 정보를 읽어와 배열에 저장
 
     fclose(fp);
 
-    for (i = 0; i < goods_count; i++) {
+    for (i = 0; i < goods_count; i++) {   // 삭제할 상품이 있는지 확인하고 해당 상품을 배열에서 제거    
         if (goods_list[i].id == id) {
             for (j = i; j < goods_count - 1; j++) {
                 goods_list[j] = goods_list[j + 1];
@@ -135,10 +169,10 @@ int goods_delete() {
         }
     }
 
-    fp = fopen("goods.txt", "w");
+    fp = fopen("goods.txt", "w");     // 상품 정보 파일을 쓰기 모드로 열어서 배열에 저장된 상품 정보를 파일에 씀
     if (fp == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
     for (i = 0; i < goods_count; i++) {
@@ -147,24 +181,24 @@ int goods_delete() {
 
     fclose(fp);
 
-    printf("상품이 삭제되었습니다.\n");
+    printf("상품이 삭제되었습니다.\n");   // 삭제 완료 메시지 출력
 }
 
-int goods_print() {
-    FILE* fp = fopen("goods.txt", "r");
+int goods_print() {   // goods.txt 파일에서 상품 정보를 읽어와 출력하는 함수
+    FILE* fp = fopen("goods.txt", "r");  // goods.txt 파일 열기
     if (fp == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
-    printf("현재 등록된 상품 목록:\n");
+    printf("현재 등록된 상품 목록:\n");   // 상품 목록 출력을 위한 헤더 출력
     printf("--------------------------------------------------\n");
 
-    Goods goods_list[MAX_GOODS_COUNT];
+    Goods goods_list[MAX_GOODS_COUNT];   // 상품 정보를 저장할 구조체 배열 선언 및 초기화
     int goods_count = 0;
-
+    // 파일에서 상품 정보를 읽어와 goods_list에 저장
     while (fscanf(fp, "%d %s %d %d", &goods_list[goods_count].id, goods_list[goods_count].name, &goods_list[goods_count].price, &goods_list[goods_count].quantity) != EOF) {
-        //printf("%d\t%s\t%d\t%d\n", goods_list[goods_count].id, goods_list[goods_count].name, goods_list[goods_count].price, goods_list[goods_count].quantity);
+        // 읽어온 상품 정보 출력
         printf("상품 ID: %d\n", goods_list[goods_count].id);
         printf("상품 이름: %s\n", goods_list[goods_count].name);
         printf("상품 가격: %d\n", goods_list[goods_count].price);
@@ -173,18 +207,19 @@ int goods_print() {
         goods_count++;
     }
 
-    fclose(fp);
+    fclose(fp);   // 파일 닫기
 }
 
-int goods_management() {
+
+int customer_management() { //고객 관리 기능을 수행하는 함수   
+    int customer_choice;
 
     while (1) {
-        int choice;
-
-        printf("1. 상품 추가\n");
-        printf("2. 상품 수정\n");
-        printf("3. 상품 삭제\n");
-        printf("4. 상품 목록 출력\n");
+        int choice;     // 고객 관리 메뉴 출력
+        printf("1. 고객 추가\n");
+        printf("2. 고객 수정\n");
+        printf("3. 고객 삭제\n");
+        printf("4. 고객 목록 출력\n");
         printf("0. 이전으로\n");
         printf("선택: ");
         scanf("%d", &choice);
@@ -192,16 +227,16 @@ int goods_management() {
 
         switch (choice) {
         case 1:
-            goods_add();
+            customer_add();     // 고객 추가 함수 호출
             break;
         case 2:
-            goods_change();
+            customer_change();    // 고객 수정 함수 호출
             break;
         case 3:
-            goods_delete();
+            customer_delete();     // 고객 삭제 함수 호출
             break;
         case 4:
-            goods_print();
+            customer_print();    // 고객 목록 출력 함수 호출
             break;
         case 0:
             printf("이전으로 돌아갑니다.\n");
@@ -211,23 +246,24 @@ int goods_management() {
     }
 }
 
-typedef struct {
+
+typedef struct { // 구조체 Customer를 정의
     int id; // 고객 ID
     char name[100]; // 고객 이름
-    int age;// 고객 전화번호 
+    int age;// 고객 나이 
 } Customer;
 
-Customer customer_list[100];
+Customer customer_list[100];    // 전역 변수로 고객 목록과 고객 수를 선언
 int customer_count = 0;
 
-int customer_add() {
-    FILE* fp = fopen("customer.txt", "a");
+int customer_add() {   // 새로운 고객을 추가하는 함수
+    FILE* fp = fopen("customer.txt", "a");    // customer.txt 파일을 append 모드로 열어 파일 포인터 fp에 저장
     if (fp == NULL) {
         printf("고객 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
-    Customer new_customer;
+    Customer new_customer;   // 새로운 고객 정보를 입력 받음 
 
     printf("고객 ID를 입력하세요: ");
     scanf("%d", &new_customer.id);
@@ -236,7 +272,7 @@ int customer_add() {
     printf("고객 나이를 입력하세요: ");
     scanf("%d", &new_customer.age);
 
-    fprintf(fp, "%d %s %d\n", new_customer.id, new_customer.name, new_customer.age);
+    fprintf(fp, "%d %s %d\n", new_customer.id, new_customer.name, new_customer.age);    // 새로운 고객 정보를 파일에 저장
     fclose(fp);
 
     printf("고객이 추가되었습니다.\n");
@@ -250,19 +286,19 @@ int customer_change() {
     FILE* fp = fopen("customer.txt", "r");
     if (fp == NULL) {
         printf("고객 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
-    Customer customer_list[MAX_CUSTOMER_COUNT];
+    Customer customer_list[MAX_CUSTOMER_COUNT];   // 고객 정보를 저장할 배열과 개수 변수를 선언
     int customer_count = 0;
 
-    while (fscanf(fp, "%d %s %d", &customer_list[customer_count].id, customer_list[customer_count].name, &customer_list[customer_count].age) != EOF) {
+    while (fscanf(fp, "%d %s %d", &customer_list[customer_count].id, customer_list[customer_count].name, &customer_list[customer_count].age) != EOF) {    // 파일에서 고객 정보를 읽어 배열에 저장
         customer_count++;
     }
 
     fclose(fp);
 
-    for (i = 0; i < customer_count; i++) {
+    for (i = 0; i < customer_count; i++) {   // 입력받은 ID와 일치하는 고객 정보를 찾아 수정
         if (customer_list[i].id == id) {
             printf("수정할 항목을 선택하세요 (1. 이름, 2. 나이): ");
             scanf("%d", &option);
@@ -278,13 +314,13 @@ int customer_change() {
                 break;
             default:
                 printf("잘못된 입력입니다.\n");
-                return 0;
+                return;
             }
 
-            fp = fopen("customer.txt", "w");
+            fp = fopen("customer.txt", "w");    // 수정된 정보를 파일에 씀 
             if (fp == NULL) {
                 printf("고객 정보 파일을 열지 못했습니다.\n");
-                return 0;
+                return;
             }
 
             for (i = 0; i < customer_count; i++) {
@@ -294,25 +330,25 @@ int customer_change() {
             fclose(fp);
 
             printf("고객 정보가 수정되었습니다.\n");
-            return 0;
+            return;
         }
     }
 
     printf("일치하는 고객 정보가 없습니다.\n");
 }
 
-int customer_delete() {
+int customer_delete() { //고객 정보를 삭제하는 함수 
     int id, i, j;
-    printf("고객 ID를 입력하세요: ");
+    printf("고객 ID를 입력하세요: ");   // 삭제할 고객의 ID 입력 받기
     scanf("%d", &id);
 
-    FILE* fp = fopen("customer.txt", "r");
+    FILE* fp = fopen("customer.txt", "r");  // 고객 정보 파일 열기 
     if (fp == NULL) {
         printf("고객 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
-    Customer customer_list[MAX_GOODS_COUNT];
+    Customer customer_list[MAX_GOODS_COUNT];    // 파일에서 고객 정보 읽어오기
     int customer_count = 0;
 
     while (fscanf(fp, "%d %s %d", &customer_list[customer_count].id, customer_list[customer_count].name, &customer_list[customer_count].age) != EOF) {
@@ -321,9 +357,9 @@ int customer_delete() {
 
     fclose(fp);
 
-    for (i = 0; i < customer_count; i++) {
+    for (i = 0; i < customer_count; i++) {    // 삭제할 고객 정보 찾기
         if (customer_list[i].id == id) {
-            for (j = i; j < customer_count - 1; j++) {
+            for (j = i; j < customer_count - 1; j++) {    // 고객 정보 배열에서 삭제
                 customer_list[j] = customer_list[j + 1];
             }
             customer_count--;
@@ -331,10 +367,10 @@ int customer_delete() {
         }
     }
 
-    fp = fopen("customer.txt", "w");
+    fp = fopen("customer.txt", "w");   // 파일 다시 열어서 수정된 정보 쓰기
     if (fp == NULL) {
         printf("고객 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
     for (i = 0; i < customer_count; i++) {
@@ -346,11 +382,11 @@ int customer_delete() {
     printf("고객이 삭제되었습니다.\n");
 }
 
-int customer_print() {
+int customer_print() {   //고객 정보를 출력하는 함수 
     FILE* fp = fopen("customer.txt", "r");
     if (fp == NULL) {
         printf("고객 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
     printf("현재 등록된 고객 목록:\n");
@@ -371,15 +407,15 @@ int customer_print() {
     fclose(fp);
 }
 
-int customer_management() {
-    int customer_choice;
+int order_management() {
 
     while (1) {
         int choice;
-        printf("1. 고객 추가\n");
-        printf("2. 고객 수정\n");
-        printf("3. 고객 삭제\n");
-        printf("4. 고객 목록 출력\n");
+        printf("1. 주문 추가\n");
+        printf("2. 주문 수정\n");
+        printf("3. 주문 삭제\n");
+        printf("4. 주문 목록 출력\n");
+        printf("5. 주문 상세 내역 출력\n");
         printf("0. 이전으로\n");
         printf("선택: ");
         scanf("%d", &choice);
@@ -387,16 +423,19 @@ int customer_management() {
 
         switch (choice) {
         case 1:
-            customer_add();
+            order_add(); // 주문 추가 함수 호출
             break;
         case 2:
-            customer_change();
+            order_change();  // 주문 수정 함수 호출
             break;
         case 3:
-            customer_delete();
+            order_delete();  // 주문 삭제 함수 호출
             break;
         case 4:
-            customer_print();
+            order_print();  // 주문 목록 출력 함수 호출
+            break;
+        case 5:
+            order_detail();  // 주문 상세 내역 출력 함수 호출
             break;
         case 0:
             printf("이전으로 돌아갑니다.\n");
@@ -404,7 +443,6 @@ int customer_management() {
         }
 
     }
-
 }
 
 typedef struct {
@@ -421,14 +459,14 @@ int order_count = 0; // 현재 저장된 주문 수
 // 세부정보 출력을 하기위해 일반정보랑 세부정보를 파일을 따로 나누고 fp는 일반정보 fp1은 세부정보로 함 
 // 파일 이름은 일반 정보는 order 세부정보는 order_detail로 함
 
-int order_add() {
+int order_add() {  //주문 추가 함수 
     FILE* fp = fopen("order.txt", "a");
     if (fp == NULL) {
         printf("주문 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
 
     }
-    Order new_order;
+    Order new_order;   // 새로운 주문 정보를 담을 구조체 변수 생성
 
     printf("주문 ID를 입력하세요: ");
     scanf("%d", &new_order.id);
@@ -442,62 +480,62 @@ int order_add() {
     scanf("%s", new_order.date);
 
 
-    fprintf(fp, "%d %s %d\n", new_order.id, new_order.name, new_order.quantity);
-    fclose(fp);
+    fprintf(fp, "%d %s %d\n", new_order.id, new_order.name, new_order.quantity);  // "order.txt" 파일에 주문 정보 추가
+    fclose(fp);  // 파일 닫기
 
     FILE* fp1 = fopen("order_detail.txt", "a");
     if (fp1 == NULL) {
         printf("주문 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
 
     }
-    fprintf(fp1, "%d %d %s\n", new_order.id, new_order.price, new_order.date);
-    fclose(fp1);
+    fprintf(fp1, "%d %d %s\n", new_order.id, new_order.price, new_order.date);  // "order_detail.txt" 파일에 주문 상세 정보 추가
+    fclose(fp1);  // 파일 닫기
 
 
 
     printf("주문이 추가되었습니다.\n");
-    return 0;
+    return;
 }
 
-int order_change() {
+int order_change() {  //주문 변경 함수 
     int id, option, i, choice;
     printf("주문 ID를 입력하세요: ");
     scanf("%d", &id);
 
-    FILE* fp = fopen("order.txt", "r");
-    if (fp == NULL) {
+    FILE* fp = fopen("order.txt", "r");   // 주문 정보 파일을 읽기 모드로 열기
+    if (fp == NULL) {   // 파일 열기에 실패한 경우
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return -1;
+        return;
     }
 
-    Order order_list[MAX_GOODS_COUNT];
+    Order order_list[MAX_GOODS_COUNT];   // 주문 정보를 저장할 구조체 배열 선언
     int order_count = 0;
     int order_count_detail = 0;
 
-    while (fscanf(fp, "%d %s %d", &order_list[order_count].id, order_list[order_count].name, &order_list[order_count].quantity) != EOF) {
+    while (fscanf(fp, "%d %s %d", &order_list[order_count].id, order_list[order_count].name, &order_list[order_count].quantity) != EOF) {  // 주문 정보 파일에서 정보를 읽어와 구조체에 저장
+
         order_count++;
     }
 
-    fclose(fp);
+    fclose(fp);   // 파일 닫기
 
-    FILE* fp1 = fopen("order_detail.txt", "r");
-    if (fp1 == NULL) {
+    FILE* fp1 = fopen("order_detail.txt", "r");   // 주문 상세 정보 파일을 읽기 모드로 열기
+    if (fp1 == NULL) {   // 파일 열기에 실패한 경우
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return -1;
+        return;
     }
 
-    while (fscanf(fp1, "%d %d %s", &order_list[order_count_detail].id, &order_list[order_count_detail].price, order_list[order_count_detail].date) != EOF) {
+    while (fscanf(fp1, "%d %d %s", &order_list[order_count].id, &order_list[order_count].price, order_list[order_count].date) != EOF) {   // 주문 상세 정보를 읽어와 구조체에 저장
         order_count_detail++;
     }
 
-    fclose(fp1);
-
-
-    printf("수정할 항목을 선택하세요 (1. 일반, 2. 상세): ");
+    fclose(fp1);   // 파일 닫기
+    printf("수정할 항목을 선택하세요 (1. 일반, 2. 상세): ");    // 일반/세부 수정 여부 선택
     scanf("%d", &choice);
     switch (choice) {
-    case 1:
+    case 1:      // 일반 항목 수정
+
         for (i = 0; i < order_count; i++) {
             if (order_list[i].id == id) {
                 printf("수정할 일반항목을 선택하세요 (1. 이름, 2. 수량): ");
@@ -505,101 +543,104 @@ int order_change() {
 
                 switch (option) {
                 case 1:
-                    printf("수정할 이름을 입력하세요: ");
+                    printf("수정할 이름을 입력하세요: ");   // 이름 수정
                     scanf("%s", order_list[i].name);
                     break;
                 case 2:
-                    printf("수정할 수량을 입력하세요: ");
+                    printf("수정할 수량을 입력하세요: ");  // 수량 수정
                     scanf("%d", &order_list[i].quantity);
                     break;
                 default:
                     printf("잘못된 입력입니다.\n");
-                    return 0;
+                    return;
                 }
-                fp = fopen("order.txt", "w");
-                if (fp == NULL) {
-                    printf("상품 정보 파일을 열지 못했습니다.\n");
-                    return -1;
-                }
-
-                for (i = 0; i < order_count; i++) {
-                    fprintf(fp, "%d %s %d\n", order_list[i].id, order_list[i].name, order_list[i].quantity);
-                }
-
-                fclose(fp);
-
-                printf("상품 정보가 수정되었습니다.\n\n");
-                return 0;
+                break;
             }
         }
-    case 2:
+        break;
+    case 2:      // 상세 항목 수정 
+
         for (i = 0; i < order_count_detail; i++) {
             if (order_list[i].id == id) {
-                printf("수정할 세부항목을 선택하세요 (1. 가격, 2. 날짜): ");
+                printf("수정할 세부항목을 선택하세요 (1. 가격, 2. 날짜): ");   // 수정할 세부항목 선택
                 scanf("%d", &option);
 
                 switch (option) {
                 case 1:
-                    printf("수정할 가격을 입력하세요: ");
-                    scanf("%d", &order_list[i].price);
+                    printf("수정할 가격을 입력하세요: ");   // 가격 수정
+                    scanf("%d", order_list[i].price);
                     break;
                 case 2:
-                    printf("수정할 날짜를 입력하세요: ");
-                    scanf("%s", order_list[i].date);
+                    printf("수정할 날짜를 입력하세요: ");   // 날짜 수정
+                    scanf("%s", &order_list[i].date);
                     break;
                 default:
-                    printf("잘못된 입력입니다.\n");
-                    return 0;
+                    printf("잘못된 입력입니다.\n");  // 잘못된 입력
+                    return;
                 }
-
-                fp1 = fopen("order_detail.txt", "w");
-                if (fp1 == NULL) {
-                    printf("상품 정보 파일을 열지 못했습니다.\n");
-                    return -1;
-                }
-
-                for (i = 0; i < order_count_detail; i++) {
-                    fprintf(fp1, "%d %d %s\n", order_list[i].id, order_list[i].price, order_list[i].date);
-                }
-
-                fclose(fp1);
-                printf("상품 정보가 수정되었습니다.\n\n");
-                return 0;
+                break;
             }
         }
-
-
+        break;
     default:
-        printf("잘못된 입력입니다.\n");
-        return 0;
+        printf("잘못된 입력입니다.\n");  // 잘못된 입력
+        return;
     }
 
-    printf("해당 ID의 상품이 없습니다.\n");
-    return 0;
+    fp = fopen("order.txt", "w");   // 수정된 상품 정보를 파일에 저장
+    if (fp == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");   // 파일 열기 실패
+        return;
+    }
+
+    for (i = 0; i < order_count; i++) {
+        fprintf(fp, "%d %s %d\n", order_list[i].id, order_list[i].name, order_list[i].quantity);
+    }
+
+    fclose(fp);
+
+    fp1 = fopen("order_detail.txt", "w");
+    if (fp1 == NULL) {
+        printf("상품 정보 파일을 열지 못했습니다.\n");   // 파일 열기 실패
+        return;
+    }
+
+    for (i = 0; i < order_count; i++) {
+        fprintf(fp1, "%d %d %s\n", order_list[i].id, order_list[i].price, order_list[i].date);
+    }
+
+    fclose(fp);
+
+    printf("상품 정보가 수정되었습니다.\n\n");   // 수정 완료 메시지 출력
+    return;
+
+
+    printf("해당 ID의 상품이 없습니다.\n");   // 상품 ID가 존재하지 않을 경우 메시지 출력
 }
 
 int order_delete() {
+    // 주문 정보를 삭제하는 함수
     int id, i, j, a, b;
     printf("상품 ID를 입력하세요: ");
     scanf("%d", &id);
 
-    FILE* fp = fopen("order.txt", "r");
+    FILE* fp = fopen("order.txt", "r");    // 주문 정보 파일을 열어서 상품 리스트를 읽어옴 
     if (fp == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
     Order order_list[MAX_GOODS_COUNT];
     int order_count = 0;
     int order_detail_count = 0;
 
-    while (fscanf(fp, "%d %s %d", &order_list[order_count].id, order_list[order_count].name, &order_list[order_count].quantity) != EOF) {
+    while (fscanf(fp, "%d %s %d", &order_list[order_count].id, order_list[order_count].name, &order_list[order_count].quantity) != EOF) {   // 상품 리스트를 읽어옴 
         order_count++;
     }
 
     fclose(fp);
 
-    for (i = 0; i < order_count; i++) {
+    for (i = 0; i < order_count; i++) {   // 해당 상품 ID를 가진 상품을 찾아서 삭제
         if (order_list[i].id == id) {
             for (j = i; j < order_count - 1; j++) {
                 order_list[j] = order_list[j + 1];
@@ -609,10 +650,10 @@ int order_delete() {
         }
     }
 
-    fp = fopen("order.txt", "w");
+    fp = fopen("order.txt", "w");  // 수정된 상품 리스트를 파일에 씀 
     if (fp == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
     for (i = 0; i < order_count; i++) {
@@ -621,10 +662,10 @@ int order_delete() {
 
     fclose(fp);
 
-    FILE* fpa = fopen("order_detail.txt", "r");
+    FILE* fpa = fopen("order_detail.txt", "r");   // 주문 상세 정보 파일을 열어서 상세 주문 리스트를 읽어옴 
     if (fpa == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
     while (fscanf(fpa, "%d %d %s", &order_list[order_detail_count].id, &order_list[order_detail_count].price, order_list[order_detail_count].date) != EOF) {
@@ -635,7 +676,7 @@ int order_delete() {
 
 
 
-    for (a = 0; a < order_detail_count; a++) {
+    for (a = 0; a < order_detail_count; a++) {   // 해당 상품 ID를 가진 상세 주문을 찾아서 삭제
         if (order_list[a].id == id) {
             for (b = a; b < order_detail_count - 1; b++) {
                 order_list[b] = order_list[b + 1];
@@ -645,10 +686,10 @@ int order_delete() {
         }
     }
 
-    fpa = fopen("order_detail.txt", "w");
+    fpa = fopen("order_detail.txt", "w");   // 수정된 상세 주문 리스트를 파일에 씀 
     if (fpa == NULL) {
         printf("상품 정보 파일을 열지 못했습니다.\n");
-        return 0;
+        return;
     }
 
     for (a = 0; a < order_detail_count; a++) {
@@ -660,11 +701,11 @@ int order_delete() {
     printf("상품이 삭제되었습니다.\n\n");
 }
 
-int order_print() {
+int order_print() {   //order.txt 파일에서 주문 정보를 읽어와서 출력하는 함수
     FILE* fp = fopen("order.txt", "r");
     if (fp == NULL) {
         printf("주문 정보 파일을 열지 못했습니다.\n");
-        return -1;
+        return -1;   //파일이 열리지 않으면 -1을 반환
     }
 
     Order order_list[MAX_ORDER_COUNT];
@@ -686,9 +727,9 @@ int order_print() {
     return 0;
 }
 
-int order_detail() {
+int order_detail() { // "order_detail.txt"에서 주문 정보를 읽어와서 화면에 출력하는 함수
     FILE* fp = fopen("order_detail.txt", "r");
-    if (fp == NULL) {
+    if (fp == NULL) {     // 파일 열기 실패
         printf("주문 정보 파일을 열지 못했습니다.\n");
         return -1;
     }
@@ -713,48 +754,11 @@ int order_detail() {
     return 0;
 }
 
-int order_management() {
-
-    while (1) {
-        int choice;
-        printf("1. 주문 추가\n");
-        printf("2. 주문 수정\n");
-        printf("3. 주문 삭제\n");
-        printf("4. 주문 목록 출력\n");
-        printf("5. 주문 상세 내역 출력\n");
-        printf("0. 이전으로\n");
-        printf("선택: ");
-        scanf("%d", &choice);
-        printf("\n");
-
-        switch (choice) {
-        case 1:
-            order_add();
-            break;
-        case 2:
-            order_change();
-            break;
-        case 3:
-            order_delete();
-            break;
-        case 4:
-            order_print();
-            break;
-        case 5:
-            order_detail();
-            break;
-        case 0:
-            printf("이전으로 돌아갑니다.\n");
-            return 0;
-        }
-
-    }
-}
 
 int main() {
     int choice;
 
-    while (1) {
+    while (1) {    // 메뉴 출력
         printf("1. 상품 관리\n");
         printf("2. 고객 관리\n");
         printf("3. 주문 관리\n");
@@ -765,18 +769,20 @@ int main() {
 
         switch (choice) {
         case 1:
-            goods_management();
+            goods_management();   // 상품 관리 함수 호출
             break;
         case 2:
-            customer_management();
+            customer_management();  // 고객 관리 함수 호출
             break;
         case 3:
-            order_management();
+            order_management();    // 주문 관리 함수 호출
             break;
         case 0:
-            printf("프로그램을 종료합니다.\n");
+            printf("프로그램을 종료합니다.\n");  // 프로그램 종료
             return 0;
         default:
-            printf("잘못된 선택입니다.\n");
+            printf("잘못된 선택입니다.\n");   // 잘못된 선택일 경우 에러 메시지 출력
             break;
-     
+        }
+    }
+}
