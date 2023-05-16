@@ -323,7 +323,7 @@ int customer_change() {
                 break;
             case 2:
                 printf("수정할 나이를 입력하세요: ");
-                scanf("%s", &customer_list[i].age);
+                scanf("%d", &customer_list[i].age);
                 break;
             default:
                 printf("잘못된 입력입니다.\n");
@@ -412,7 +412,7 @@ int customer_print() {   //고객 정보를 출력하는 함수
         //printf("%d\t%s\t%d\t%d\n", goods_list[goods_count].id, goods_list[goods_count].name, goods_list[goods_count].price, goods_list[goods_count].quantity);
         printf("고객 ID: %d\n", customer_list[customer_count].id);
         printf("고객 이름: %s\n", customer_list[customer_count].name);
-        printf("고객 전화번호: %d\n", customer_list[customer_count].age);
+        printf("고객 나이: %d\n", customer_list[customer_count].age);
         printf("--------------------------------------------------\n");
         customer_count++;
     }
