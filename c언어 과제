@@ -1,0 +1,25 @@
+#include <stdio.h>
+
+union Data {
+    int i;
+    float f;
+    char str[20];
+};
+
+int main() {
+    union Data data;
+
+    data.i = 10;
+    printf("정수 값: %d\n", data.i);
+
+    data.f = 3.14;
+    printf("부동소수점 값: %f\n", data.f);
+
+    strcpy(data.str, "Hello, World!");
+    printf("문자열 값: %s\n", data.str);
+
+    return 0;
+}
+
+union에 struct와 유사하게 데이터를 저장하는 구조이지만 struct와 달리 멤버들이 메모리를 공유하기 때문에 모든 멤버 중에서 메모리 크기가 가장 큰 멤버의 크기만큼 메모리를 할당합니다.
+이 코드에서는 union Data를 정의하고, 이 union에는 정수, 부동 소수점 및 문자열 값을 저장하는 세 가지 멤버가 있습니다. main 함수에서는 이 union을 사용하여 각 멤버에 값을 할당하고 출력합니다.
